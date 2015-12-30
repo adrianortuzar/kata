@@ -1,0 +1,59 @@
+
+<script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
+<script type="text/javascript">
+
+	"use strict";
+
+	var wordObjects = {};
+
+    //fetch text file
+    $.get("http://codekata.com/data/wordlist.txt", function(data) {
+        //split on new lines
+        var lines = data.split('\n');
+        wordObjects = lines.map(createWordObj);
+
+    });
+
+
+	var makeHash = function(wordObject){
+		var hash = 0;
+		for(let letter in wordObject) {
+			hash += letter.charCodeAt(0);
+		}
+		return hash;
+	};
+
+	var compare = function(a, b) {
+		return (JSON.stringify(a) === JSON.stringify(b));
+	};
+
+	var search = function(word) {
+		var compareObj = createWordObj(word);
+		var equalHashes = wordObjects.filter(g => g.hash === compareObj.hash);
+		var anagrams = equalHashes.filter(a => compare(a.code, compareObj.code));
+		return anagrams;
+	};
+
+	var createWordObj = function(strWord) {
+
+		var ret = {};
+
+		for(let letter of strWord.split("").sort()) {
+			var value = ret[letter];
+			if(value){
+				ret[letter] += 1;
+			}
+			else {
+				ret[letter] = 1;
+			}
+			
+		}
+
+		return {
+			code : ret,
+			word : strWord,
+			hash : makeHash(ret)
+		}
+	};
+
+</script>
